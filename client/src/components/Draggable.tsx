@@ -11,11 +11,12 @@ export type OnMouseUpData = {
 type Props = {
   children: React.ReactNode;
   getDataOnMouseUp?: (data: OnMouseUpData) => void;
+  getPosition?: (position: { x: number; y: number }) => void;
   onMouseDown?: (e: React.MouseEvent) => void;
   snap?: LetterSnapPosition
 };
 
-const Draggable = ({ children, getDataOnMouseUp, onMouseDown, snap }: Props) => {
+const Draggable = ({ children, getDataOnMouseUp, getPosition, onMouseDown, snap }: Props) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -53,6 +54,10 @@ const Draggable = ({ children, getDataOnMouseUp, onMouseDown, snap }: Props) => 
       setIsMounted(true);
     }
   }, [])
+
+  useEffect(() => {
+    if (getPosition) getPosition(position);
+  }, [position])
 
   const handleMouseDown = (e: React.MouseEvent) => {
     setIsDragging(true);

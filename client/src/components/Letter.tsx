@@ -7,12 +7,13 @@ import Draggable from './Draggable'
 type Props = {
   letter: LettersType
   getDataOnMouseUp: (data: OnMouseUpData) => void
+  getPosition?: (position: { x: number; y: number }) => void 
   onMouseDown?: (e: React.MouseEvent) => void
   snap: LetterSnapPosition
   index: number
 }
 
-const Letter = ({ letter, getDataOnMouseUp, onMouseDown, index, snap }: Props) => {
+const Letter = ({ letter, getDataOnMouseUp, getPosition, onMouseDown, snap }: Props) => {
   const [fillerDivWidth, setFillerDivWidth] = useState<string>("0px")
 
   const pointsDivRef = useRef<HTMLDivElement>(null)
@@ -25,7 +26,7 @@ const Letter = ({ letter, getDataOnMouseUp, onMouseDown, index, snap }: Props) =
   }, [])
 
   return (
-    <Draggable getDataOnMouseUp={getDataOnMouseUp} snap={snap} onMouseDown={onMouseDown}>
+    <Draggable getDataOnMouseUp={getDataOnMouseUp} snap={snap} onMouseDown={onMouseDown} getPosition={getPosition}>
       <div
         className="
           rounded bg-slate-100 p-0.5 w-11 h-11 flex items-center justify-between

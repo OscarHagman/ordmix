@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, use } from 'react'
 import { LettersType } from '@/lib/Letters'
 import type { OnMouseUpData } from './Draggable'
+import type { MovingLetter } from '@/pages/multiplayer'
 import Letter from './Letter'
 
 type Cell = {
@@ -28,9 +29,9 @@ export type LetterSnapPosition = {
 const generateInitialGrid = () => {
   const grid: Cell[][] = []
 
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 10; i++) {
     const row: Cell[] = []
-    for (let j = 0; j < 15; j++) {
+    for (let j = 0; j < 10; j++) {
       const divRef = useRef<HTMLDivElement>(null)
       row.push({ letter: null, ref: divRef, centerPosition: { x: 0, y: 0 } })
     }
@@ -68,13 +69,25 @@ const generateLettersInitialSnapPositions = (letters: LettersType[]) => {
 
 type Props = {
   letters: LettersType[]
+  getLetterCurrentPosition?: (positions: { x: number; y: number, index: number }) => void
+  movingLetter?: MovingLetter | null
 }
 
-const PlayArea = ({ letters }: Props) => {
+const PlayArea = ({ letters, getLetterCurrentPosition, movingLetter }: Props) => {
   const [grid, setGrid] = useState<Cell[][]>(generateInitialGrid())
   const [lettersSnapPositions, setLettersSnapPositions] = useState<LetterSnapPosition[]>(generateLettersInitialSnapPositions(letters))
 
   const playAreaRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (movingLetter) {
+      const updatedLettersSnapPositions = [...lettersSnapPositions]
+      const updatedLetterSnapPosition = updatedLettersSnapPositions[movingLetter.index]
+      updatedLetterSnapPosition.position = { x: movingLetter.x, y: movingLetter.y }
+      updatedLetterSnapPosition.hasSnapped = true
+      setLettersSnapPositions(updatedLettersSnapPositions)
+    }
+  }, [movingLetter])
 
   useEffect(() => {
     const updatedGrid: Cell[][] = []
@@ -182,12 +195,17 @@ const PlayArea = ({ letters }: Props) => {
     }
   }
 
+
   const handleLetterMouseDown = (index: number) => {
     const updatedLettersSnapPositions = [...lettersSnapPositions]
     const updatedLetterSnapPosition = { ...updatedLettersSnapPositions[index], hasSnapped: false}
 
     updatedLettersSnapPositions[index] = updatedLetterSnapPosition
     setLettersSnapPositions(updatedLettersSnapPositions)
+  }
+
+  const handleGetPosition = (position: { x: number; y: number }, index: number) => {
+    if (getLetterCurrentPosition) getLetterCurrentPosition({ ...position, index })
   }
 
   return (
@@ -206,6 +224,7 @@ const PlayArea = ({ letters }: Props) => {
         {letters.map((letter, index) => (
           <Letter
             getDataOnMouseUp={(data) => handleLetterPosition(data, index)}
+            getPosition={(position) => handleGetPosition(position, index)}
             onMouseDown={() => handleLetterMouseDown(index)}
             index={index}
             snap={lettersSnapPositions[index]}
