@@ -49,15 +49,7 @@ export default function Home() {
           Start game
         </button>}
 
-      {letters.length > 0 &&
-        <>
-          <PlayArea />
-          <div className='flex flex-wrap gap-4'>
-            {letters.map((letter, index) => (
-              <Letter key={index} letter={letter} />
-            ))}
-          </div>
-        </>}
+      {letters.length > 0 && <PlayArea letters={letters} />}
     </main>
   )
 }
