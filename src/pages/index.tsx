@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Inter } from 'next/font/google'
 import { Letters, LettersType } from '@/lib/Letters'
 import Letter from '@/components/Letter'
@@ -8,6 +8,10 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const [letters, setLetters] = useState<LettersType[]>([])
+
+  useEffect(() => {
+    handleStartGame()
+  }, [])
 
   const getRandomLetters = (numOfLetters: number) => {
     const randomLetters: LettersType[] = []
@@ -44,10 +48,10 @@ export default function Home() {
   
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between p-6 ${inter.className}`}>
-      {letters.length === 0 &&
+      {/* {letters.length === 0 &&
         <button onClick={handleStartGame} className='rounded px-4 py-2 border border-slate-300 hover:bg-slate-800 transition-all duration-200'>
           Start game
-        </button>}
+        </button>} */}
 
       {letters.length > 0 && <PlayArea letters={letters} />}
     </main>
